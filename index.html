@@ -1,0 +1,585 @@
+<!doctype html>
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8">
+
+		<title>ETB16a</title>
+
+		<meta name="description" content="A framework for easily creating beautiful presentations using HTML">
+		<meta name="author" content="Hakim El Hattab">
+
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-status-bar-style" content="white-translucent" />
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+
+		<link rel="stylesheet" href="css/reveal.css">
+		<link rel="stylesheet" href="css/theme/white.css" id="theme">
+
+		<!-- Code syntax highlighting -->
+		<link rel="stylesheet" href="lib/css/zenburn.css">
+		<script src="js/jquery.js" type="text/javascript"></script>
+		<script src="js/d3.js" type="text/javascript"></script>
+
+		<!-- Printing and PDF exports -->
+		<script>
+			var link = document.createElement( 'link' );
+			link.rel = 'stylesheet';
+			link.type = 'text/css';
+			link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
+			document.getElementsByTagName( 'head' )[0].appendChild( link );
+		</script>
+<script type="text/x-mathjax-config">
+    // <![CDATA[
+    MathJax.Hub.Config({ 
+        TeX: {extensions: ["AMSmath.js", "AMSsymbols.js"]},     
+        extensions: ["tex2jax.js"],
+        jax: ["input/TeX", "output/HTML-CSS"],
+        showProcessingMessages : false,
+        messageStyle : "none" ,    
+        showMathMenu: false ,
+        tex2jax: {
+            processEnvironments: true,
+            inlineMath: [ ['$','$'], ["\((","\))"] ],
+            displayMath: [ ['$$','$$'], ["\[","\]"] ],
+            preview : "none",
+            processEscapes: true
+        },
+        "HTML-CSS": { linebreaks: { automatic:true, width: "latex-container"} }
+    });
+    // ]]>
+</script>
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML"></script>
+
+<link rel="stylesheet" href="css/latex2html5.css"> 
+     <script type="text/javascript" src="js/latex2html5.min.js"></script> 
+		<!--[if lt IE 9]>
+		<script src="lib/js/html5shiv.js"></script>
+		<![endif]-->
+	</head>
+
+	<body>
+		<div class="logo_unibas">
+  <img src="images/UniBas_Logo_EN_Schwarz_RGB_65-eps-converted-to.png" />
+</object></div>
+				<div class="logo_dbe">
+  <img src="images/DBE_Logo_RGB-eps-converted-to.png" />
+</object></div>
+		<div class="reveal">
+
+			<!-- Any section element inside of this container is displayed as a slide -->
+			<div class="slides">
+				
+				<section><br/><br/><h2>Automatic Segmentation of Brain Structures using Multi-Dimensional Recurrent Neural Networks</h2><p>Simon Andermatt</p><p>Medical Image Analysis Center (MIAC)</p></section>
+				<section data-markdown>
+					### Contents
+					* Problem statement
+					* RNN/GRU run-through
+					* MD-GRU
+					* Results on MrBrains13
+
+				</section>
+				<section>
+<h3>Goal</h3>
+
+<div>
+<img src="images/t1.png" style="width: 20%;"/>
+<img src="images/t1-ir.png" style="width: 20%;"/>
+<img src="images/t2-flair.png" style="width: 20%;"/> ->
+<img src="images/Traindata5atslice19-Testlabel.png" style="width: 20%;"/>
+</div>
+<div>
+<img src="images/sl19-v5-test-t1.png" style="width: 20%;"/>
+<img src="images/sl19-v5-test-t1-ir.png" style="width: 20%;"/>
+<img src="images/sl19-v5-test-t2-flair.png" style="width: 20%;"/> ->
+<img src="images/qm.png" style="width: 20%;"/>
+</div>
+blabla
+				</section>
+				<section data-markdown>
+					### Goal
+					![image](images/t1.png)
+					![image gru](images/t1-ir.png)
+					![image gru](images/t2-flair.png)
+					<br>
+					<div style="font-size: 200px;">?</div>
+				</section>
+				
+				<section data-markdown>
+					### RNN/GRU
+					![image gru](images/LSTM3-var-GRU.png)
+					* <tiny>http://colah.github.io/posts/2015-08-Understanding-LSTMs/</tiny>
+					
+				</section>
+				
+				<section data-markdown>
+					    <script type="text/template">
+					### $L\_p$ Norm
+					
+					* $L\_p$ Norm: $||x||_p = (|x_1|^p+|x_2|^p+...+|x_n|^p)^\frac{1}{p}$
+					
+					* $L\_2$ Norm: $||x||_2 = ((x_1)^2+...+(x_n)^2)^\frac{1}{2}$<!-- .element: class="fragment" -->
+					
+					* <div class="fragment">$L\_0$ "Norm": $||x||_0 = |x_1|^0+...+|x_n|^0$<br> <small>(number of nonzero components)</small> <br>Not a norm, since $ ||\lambda x||_0  \neq  |\lambda| \,||x||_0 $</div>
+					</script>
+				</section>
+				<section>
+					<!--<video autoplay="true" style="float: left; width: 50%;" src="images/test1.mp4" controls="true"></video> <video style="float: right; width: 20%;" src="images/test1.mp4" autoplay="true" control="true"></video>-->
+				</section>
+				<section data-markdown>
+					### $L_0$ Gradient Minimization
+					
+					* $F = \min\limits_S || S - I ||^2 + \lambda ||\nabla S||_0$
+					* $F = \min\limits\_S \sum\limits\_\{i=1\}^M  \bigg( ||S\_i-I\_i||^2+\lambda/2\sum\limits\_\{j\in N\_i\} ||S\_i-S\_j||\_0 \bigg) $
+					  
+						* <small>With $N_i$ being the neighbors of element $i$</small>
+					  
+					* NP-hard problem (very high computational complexity)
+						* Solvable through approximation
+				</section>
+				<section data-markdown>
+				    <script type="text/template">
+					### Their approach: Region Fusion
+					
+					For each two neighboring regions $i$ and $j$, the contribution to $F$ is:
+					* $f = \min\limits_{S_i,S_j} ||S_i-I_i||^2 + ||S_j-I_j||^2+ \lambda ||S_i-S_j||_0$
+					* <div>Since the last term is either $0$ or $1$:
+					  
+					  If $S_i \neq S_j$:
+						* $S_i = I_i, S_j = I_j \Rightarrow f = \lambda$
+
+					  If $S_i = S_j$:
+						* $S_i = S_j = (I_i+I_j)/2 \Rightarrow f =  (I_i - I_j)^2$</div><!-- .element: class="fragment" --></script>
+				</section>
+				<section data-markdown>
+					### Region Fusion
+					#### Fusion Criterion
+					
+					* if $||I_i-I_j||^2/2 \leq \lambda$
+						* fuse labels
+						  
+						  $S_i = (I_i+I_j)/2$
+						  
+						  $S_j = (I_i+I_j)/2$
+						  
+					* else
+						* do nothing.
+					
+				</section>
+				<section data-markdown>
+					### Region Fusion
+					#### For regions larger than $1$:
+					$ f = \min\limits\_{S\_i,S\_j} \omega\_i||S\_i-Y\_i||^2 + \omega\_j||S\_j-Y\_j||^2+ \lambda c\_{i,j}||S\_i-S\_j||\_0 $
+					
+					$\omega_i, \omega_j$: number of elements in regions $i$ and $j$
+					
+					$c_{i,j}$: size of border between regions $i$ and $j$
+					
+					$Y_i$: mean intensity of region $i$.
+
+				</section>
+				<section data-markdown>					
+					#### And the fusion criteria:
+					* If $ \omega\_i \omega\_j ||Y\_i-Y\_j||^2 \leq \beta c\_{i,j} (\omega\_i + \omega\_j) $:
+					
+						* $S\_i = S\_j = (\omega\_i Y\_i+\omega\_j Y\_j)/(\omega\_i + \omega\_j)$
+					
+					* else:
+						
+						* $ S\_i = Y\_i, S\_j = Y\_j$
+						
+				</section>
+				<section data-markdown>
+					#### Approach:
+					* For each pixel: a region $G_i$, #elements $\omega_i$, intensity $Y_i$
+					* Neighborhood $N\_i$ of $i$ and $c\_{i,j}$ = 1 for each $j \in N\_i$
+					* while($\beta \leq \lambda$)
+						* While $i \leq $ number of groups:
+							* For all $j \in N_i$:
+								* if fusion criterion:
+									* merge $G_j$ with $G_i$; update $\omega_i$ and $Y_i$
+									* remove $j$ in $N\_i$ and set $c\_{i,j}$ to 0
+									* merge all $k$ in $N_j$ with $N_i$ and erase $j$ in $N_k$
+									* remove $G_j$ , i++	
+						* iter++
+						* $\beta$ = g(iter,maxNumIter)$\lambda$
+				</section>
+				<section data-markdown>
+					#### $\beta$
+					* linear: $g(iter,K) = (iter/K)$
+					* nonlinear: $g(iter,K) = (iter/K)^\gamma$
+					* multiplicative: $g(iter,K) = \alpha^{(iter-K)}$
+					  
+					  .
+					
+					#### Fusion criterion:
+					* $ \omega\_i \omega\_j ||Y\_i-Y\_j||^2 \leq \beta c\_{i,j} (\omega\_i + \omega\_j) $
+
+				</section>
+				<section>
+					<h4>Example:</h4>
+					<table><tbody><tr><td>
+					<!--<img id="img" src="images/nyan.jpg" style="border: none;"/>-->
+					<img id="img" src="images/colorbrainsmall.png" style="border: none;"/>
+					</td><td>
+					<canvas id="canvas" style="margin: 15px 0px;"></canvas>
+					</td></tr></tbody></table>
+					<input type="file" name="myFileSelect" id="file"/><small>$\lambda$:</small><input id="lambda" value=0.08></input>K<span id=counter>()</span>:<input id="K" value=100></input><button id="reset">reset</button>
+					<button id="iterate">iterate</button>
+					<button id="iterateAll">iterate all</button>
+					<script>
+
+
+//var img = new Image();
+//img.src = 'images/badsample1.png';
+var can = document.getElementById('canvas');
+var ctx = can.getContext('2d');
+ctx.imageSmoothingEnabled = true;
+
+var width = img.width;
+var height = img.height;
+console.log(width + "X"+ height)
+var G = []
+var Y = []
+var N = []
+var w = []
+var c = []
+var M = 0;
+var P = 0;
+var iter = 0;
+var K = 100;
+var beta = 0;
+var lambda = 0;
+
+var loadNewImage = function() {
+	var reader  = new FileReader();
+
+	reader.onloadend = function () {
+		document.getElementById("img").src = "url("+reader.result+")";
+	}
+	var file = $("#file")[0].files[0];
+	if (file) {
+		 reader.readAsDataURL(file);
+		 console.log("loading image");
+	}
+	console.log("over and out");   
+}
+
+var initAlgo = function(callback) {
+	G = [];
+	N = [];
+	Y = [];
+	w = [];
+	c = [];
+	M = 0;
+	P = 0;
+	iter = 0;
+	$("#counter").html("()");
+	beta = 0;
+	K = parseFloat($("#K").val());
+	lambda = 255*255*parseFloat($("#lambda").val())
+	var i2 = new Image();
+	i2.onload = function() {
+		width = i2.width;
+		height = i2.height;
+		can.height = height;
+		can.width = width
+		ctx.drawImage(img, 0, 0, img.width, img.height);
+		var data = ctx.getImageData(0,0,width,height);
+		//console.log(data.data[10000]);
+		console.log("initializing");
+		iter = 0;
+		P = height*width;
+		M = height*width;
+		for (var y = 0; y < height; y++){
+			for (var x = 0; x < width; x++) {
+				Y.push(data.data[(y*width+x)*4]);
+				Y.push(data.data[(y*width+x)*4+1]);
+				Y.push(data.data[(y*width+x)*4+2]);
+				var i = (y*width+x);
+				G.push([i])
+				w.push(1);
+				N.push([]);
+				c.push([]);
+				if (x > 0){
+					N[i].push(i-1);
+					c[i].push(1);
+				}
+				if (x < width-1) {
+					N[i].push(i+1);
+					c[i].push(1);
+				}
+				if (y > 0) {
+					N[i].push(i-width);
+					c[i].push(1);
+				}
+				if (y < height-1) {
+					N[i].push(i+width);
+					c[i].push(1);
+				}
+			}
+		}
+		console.log("initialized!");
+		if (callback != undefined) {
+            callback();
+        }
+	};
+	
+	i2.src = img.src;
+
+	
+        //code
+
+}
+
+var redrawPicture = function() {
+	var data = ctx.getImageData(0,0,width, height);
+	//ctx.fillRect(0,0,width,height);
+	//console.log("redrawing");
+	for (var i = 0; i < width*height; i++) {
+		data.data[i*4] = 0;
+		data.data[i*4+1] = 255;
+		data.data[i*4+2] = 0;
+		data.data[i*4+3] = 255;
+    }
+	for (var i = 0; i < width*height; i++){
+        if (G.length > i && G[i].length>0) {
+			//console.log("had " + G[i].length + " elements");
+            for (var j = 0; j < G[i].length; j++) {
+                var el = G[i][j];
+				data.data[el*4] = Y[i*3];
+				data.data[el*4+1] = Y[i*3+1];
+				data.data[el*4+2] = Y[i*3+2];
+            }
+        }
+    }
+	ctx.putImageData(data,0,0);
+	//console.log("redrawn");
+}
+
+var iterate = function(callback) {
+	if (beta <= lambda) {
+		//console.log("iterating");
+		var num = 0;
+        var i = 0;
+		while( i < P ) {
+			//console.log("i: "+i);
+			if (G[i].length < 1) {
+				i++
+                continue;
+            }
+			//console.log(i);
+			jit = 0;
+			while (jit < N[i].length) {
+			//for (var jit = 0; jit < N[i].length; jit++){
+                var j=N[i][jit];
+				//console.log(w[i]*w[j]*(Y[i]-Y[j])*(Y[i]-Y[j]));
+				//console.log(beta*c[i][jit]);
+				var temp =(Y[i*3]-Y[j*3]);
+				var norm = temp*temp;
+				temp = Y[i*3+1]-Y[j*3+1];
+				norm += temp*temp;
+				temp = Y[i*3+2]-Y[j*3+2];
+				norm += temp*temp;
+				//var norm = (Y[i]-Y[j])*(Y[i]-Y[j])
+				if (w[i]*w[j]*norm <= beta*c[i][jit]*(w[i]+w[j])) {
+					//console.log("going");
+                    //while(G[j].length>0) {
+					var vals = G[j].length;
+					for (var valsit = 0; valsit < vals; valsit++) {
+                        G[i].push(G[j].pop());
+                    }
+					//for (var git = 0; git < G[j].length; git++) {
+					//	//G[i].push(G[j][i])
+					//	G[i].push(G[j][git]);
+					//}
+					//G[i].push(...G[j]); //add all elements of j to i
+					Y[i*3] = (w[i]*Y[i*3]+w[j]*Y[j*3])/(w[i]+w[j]); //mean value of both to i
+					Y[i*3+1] = (w[i]*Y[i*3+1]+w[j]*Y[j*3+1])/(w[i]+w[j]); //mean value of both to i
+					Y[i*3+2] = (w[i]*Y[i*3+2]+w[j]*Y[j*3+2])/(w[i]+w[j]); //mean value of both to i
+
+					w[i] += w[j] //add element number of j to i
+					//N[i].indexOf
+					N[i].splice(jit,1);
+					for (var kit = 0; kit < N[j].length; kit++) {
+						
+						var k = N[j][kit];
+						if (k==i) {
+                            continue;
+                        }
+						iit = N[i].indexOf(k); //is k neighbor of i?
+						if (iit != -1) { //k is already neighbor of i
+                            c[i][kit] += c[j][kit]
+							c[k][iit] += c[i][kit] //sum up number of faces that will be eliminated with j 
+                        } else {
+							N[i].push(k);
+							N[k].push(i);
+							c[i].push(c[j][kit]);
+							c[k].push(c[j][kit]);
+						}
+						jink = N[k].indexOf(j);
+						if (jink >= 0) { 
+                            N[k].splice(jink,1);
+							c[k].splice(jink,1);
+                        } else {
+							console.log("not really consistent");
+						}
+                    }
+					//G[j] = [];
+					N[j] = [];
+					w[j] = 0;
+					//console.log("going to break");
+					//break;
+                } else {
+					jit++;
+				}
+            }
+			if (G[i].length > 0){
+                num++
+            }
+			//if (i == 10000) {
+            //    console.log(i);
+			//	console.log(N[i]);
+			//	console.log(c[i]);
+			//	console.log(Y[i]);
+			//	console.log(w[i]);
+            //}
+			i++;
+
+        }
+		//console.log("had num " + num);
+		if (callback != undefined) {
+            callback();
+        }
+		
+    }
+	//console.log("iterated");
+	iter++;
+	$("#counter").html("("+iter+")");
+	beta = iter+1.0/K*lambda;
+	//code
+}
+var iterateFull = function() {
+	initAlgo(function() {
+		for (var fiter = 0; fiter < K; fiter++) {
+			iterate();
+		}
+		redrawPicture();
+	});
+}
+$(document).ready(function(){
+	$("#load").click(function() {
+		$("#file").click();
+	});
+	$("input[name='myFileSelect']").on("change",function() {
+		var files = !!this.files ? this.files : [];
+		if (!files.length || !window.FileReader ) {
+			console.log("doesnt support filereader");
+			return;
+		}
+		if ( /^image/.test(files[0].type) ){
+            var reader = new FileReader();
+			reader.readAsDataURL( files[0]);
+			reader.onloadend = function(e) {
+				$("#img").attr("src",e.target.result);
+			}
+        }
+		
+		
+
+//				$("#img").attr("src","images/"+this.files[0].name);
+		//loadNewImage();
+		//$("#img").attr("src",$("#file").val());
+	});
+	$("#reset").click(function() {initAlgo();});
+	$("#iterate").click(function() {iterate(redrawPicture);});
+	$("#lambda").change(function() {	
+		lambda = parseFloat($(this).val())*255*255;
+	});
+	//$("#lambda").trigger();
+	lambda =  parseFloat($("#lambda").val())*255*255;
+	$("#K").change(function() {	
+		K = parseInt($(this).val());
+	});
+	K = parseInt($("#K").val());
+	$("#iterateAll").click(function() {iterateFull();});
+	console.log("docreadyforcanvas");
+
+});
+$("img").ready(function() {
+	setTimeout(function() {var img = document.getElementById('img');
+	//initAlgo();
+	},300);
+}); //nasty hack, since we had problems that image was not yet properly set up when launching content in ready of document.
+
+
+					</script>
+				</section>
+				<section data-markdown>
+					### Experiments
+					
+					* Compare their method to Xu et al, Cheng et al, and Storath et al.
+					
+					* Their method outperforms the others in terms of speed
+					
+					* Xu et al performs worse.
+					
+					* Storath and Cheng about the same cost, but slower.
+				</section>
+				<section data-markdown>
+					### Applications
+					
+					* Image denoising
+					
+						* Faster, but Storath et al. better
+						
+					* Content-based color quantization
+						
+					* Clip art compression artifact removal
+						* Faster, but comparable results to others.
+					
+					* Mesh denoising
+						* use normals, then reconstruct vertices.
+						* claim to be better and faster.
+				</section>
+				<section>Questions?<br></section>
+
+			</div>
+
+		</div>
+				<script src="js/reveal.js"></script>
+
+		<script type="text/javascript">
+                $('body').latex();
+		</script>
+		<script src="lib/js/head.min.js"></script>
+
+
+		<script>
+
+			// Full list of configuration options available at:
+			// https://github.com/hakimel/reveal.js#configuration
+			Reveal.initialize({
+				controls: true,
+				progress: true,
+				history: true,
+				center: true,
+
+				transition: 'slide', // none/fade/slide/convex/concave/zoom
+
+				// Optional reveal.js plugins
+				dependencies: [
+					{ src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+					{ src: 'plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/highlight/highlight.js', async: true, condition: function() { return !!document.querySelector( 'pre code' ); }, callback: function() { hljs.initHighlightingOnLoad(); } },
+					{ src: 'plugin/zoom-js/zoom.js', async: true },
+					{ src: 'plugin/notes/notes.js', async: true }
+				]
+			});
+
+		
+		</script>
+	</body>
+</html>
