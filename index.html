@@ -73,9 +73,9 @@
 				<section><br/><br/><h2>Automatic Segmentation of Brain Structures<br/> using Multi-Dimensional <br/>Recurrent Neural Networks</h2><p>Simon Andermatt</p><p>Medical Image Analysis Center (MIAC)</p></section>
 				<section data-markdown>
 					### Contents
-					* Problem of semantic segmentation
+					* Voxelwise classification/Segmentation of MrBrains
 					* Recurrent neural networks (RNN)
-					* How to adapt RNN
+					* Adaptation to 3 dimensions
 					* MD-GRU on MrBrains13
 
 				</section>
@@ -98,6 +98,7 @@ blabla
 				</section>-->
 				<section>
 					<h2>Goal</h2>
+					<h4>MrBrains13 challenge data</h4>
 					<!--<h5>MrBrains13 challenge data</h5>-->
 					<img src="images/objective-topath.svg" id="blaasdf" style="border: none; box-shadow: none;"><!--fallback--></object>
 
@@ -554,18 +555,19 @@ blabla
 $\tilde{h}^j_t = \phi \left( \sum\limits_i^I (x^i*w^{i,j}) + r^j \odot \sum\limits_k^J ( h_{t-1}^k * u^{k,j} ) +b^j\right),$
   $h^j_{t} = z^j\odot h^j_{t-1} + (1-z^j)\odot\tilde{h}^j_{t}.$</span></td><td style="width: 50%;">
 						<object type="image/svg+xml" data="images/cgrunotitle3-topath.svg" id="svgObject5" style="float: left;"><!--fallback--></object>
+						<h4>MD-GRU Layer: 6 C-GRU</h4>
 					</td></tr></tbody></table>
 
 				</section>
 				<section>
-					<h2>MD-GRU and Network</h2>
-					<object type="image/svg+xml" data="images/mdgrunotitle2-topath.svg" id="svgObject6"><!--fallback--></object>
+					<h2>Network</h2>
+					<!--<object type="image/svg+xml" data="images/mdgrunotitle2-topath.svg" id="svgObject6"></object>-->
 					<object type="image/svg+xml" data="images/network-topath.svg" id="svgObject7"><!--fallback--></object>
 				</section>
 				<section>
 					<!--<h2>MrBrains13 visual results</h2>-->
 					<!--<object type="image/svg+xml" style="height: 100%; width: auto;"  data="images/mdgru-images.svg" id="svgObject9"></object>-->
-										<img src="images/mdgru-images.png" style="height: 80%;width: 60%; border:none; box-shadow: none;"/>
+				<img src="images/mdgru-images.png" style="height: 80%;width: 60%; border:none; box-shadow: none;"/>
 
 				</section>
 				<section>
