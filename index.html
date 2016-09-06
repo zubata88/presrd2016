@@ -550,12 +550,13 @@ blabla
 				</section>-->
 				<section>
 					<h2>Inside the black box:</h2><h4>Convolutional Gated Recurrent Unit (C-GRU)</h4>
+					<p>MD-GRU Layer: 1 C-GRU for each direction & dimension</p>
 					<table><tbody><tr style="display: inline;"><td style="width: 50%; font-size: large;"><span style="float: left;">					 $r^j = \sigma \left( \sum\limits_i^I (x^i*w_r^{i,j}) + \sum\limits_k^J ( h_{t-1}^k*u_r^{k,j} ) +b^j_r\right),$</p>
  $z^j = \sigma \left( \sum\limits_i^I (x^i*w_z^{i,j}) + \sum\limits_k^J ( h_{t-1}^k*u_z^{k,j} ) +b^j_z\right),$
 $\tilde{h}^j_t = \phi \left( \sum\limits_i^I (x^i*w^{i,j}) + r^j \odot \sum\limits_k^J ( h_{t-1}^k * u^{k,j} ) +b^j\right),$
   $h^j_{t} = z^j\odot h^j_{t-1} + (1-z^j)\odot\tilde{h}^j_{t}.$</span></td><td style="width: 50%;">
 						<object type="image/svg+xml" data="images/cgrunotitle3-topath.svg" id="svgObject5" style="float: left;"><!--fallback--></object>
-						<h4>MD-GRU Layer: 6 C-GRU</h4>
+						
 					</td></tr></tbody></table>
 
 				</section>
