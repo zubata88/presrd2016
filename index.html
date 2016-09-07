@@ -73,7 +73,7 @@
 				<section><br/><br/><h2>Automatic Segmentation of Brain Structures<br/> using Multi-Dimensional <br/>Recurrent Neural Networks</h2><p>Simon Andermatt</p><p>Medical Image Analysis Center (MIAC)</p></section>
 				<section data-markdown>
 					### Contents
-					* Voxelwise classification of MrBrains
+					* Voxelwise classification/Segmentation of MrBrains
 					* Recurrent neural networks (RNN)
 					* Adaptation to 3 dimensions
 					* MD-GRU on MrBrains13
@@ -127,9 +127,12 @@ blabla
 					### RNN
 					* Neural network handling sequences
 					* For each point in sequence:
-						* Input: x at time t and h at time t-1
-						* Learned weights w and u (same for each t)
-						* Output: h at time t
+						* Input:
+							- Input x at time t
+							- Output of time t-1 (recurrent)
+						* Learns weights to combine them (same for each t)
+						* Output:
+							- Output at time t
 
 				</section>
 				
